@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Product Management</title>
+  <link rel="stylesheet" href="/stylesheets/style.css" />
+</head>
+<body>
+  <h1>Products</h1>
+
+  <h2>Create new product</h2>
+  <form action="/products" method="post">
+    <label>Title: <input type="text" name="title" required /></label><br />
+    <label>Price: <input type="number" name="price" step="0.01" /></label><br />
+    <label>Description:<br /><textarea name="description"></textarea></label><br />
+    <label>Category ID: <input type="text" name="category" /></label><br />
+    <button type="submit">Create</button>
+  </form>
+
+  <h2>Existing products</h2>
+  <ul>
+    <% products.forEach(function(p) { %>
+      <li>
+        <strong><%= p.title %></strong> (<%= p.slug %>) - $<%= p.price %><br />
+        <em><%= p.description %></em><br />
+        Category: <%= p.category %><br />
+        <a href="/products/edit/<%= p._id %>">Edit</a>
+        <form action="/products/delete/<%= p._id %>" method="post" style="display:inline">
+          <button type="submit" onclick="return confirm('Delete this product?')">Delete</button>
+        </form>
+      </li>
+    <% }) %>
+  </ul>
+
+  <p><a href="/">Back to home</a></p>
+</body>
+</html>
