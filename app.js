@@ -7,8 +7,6 @@ let mongoose = require('mongoose')
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-var rolesRouter = require('./routes/roles');
-var productsRouter = require('./routes/products');
 
 var app = express();
 
@@ -23,33 +21,19 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
-app.use('/users', usersRouter); // keep existing basic route if needed
-app.use('/api/v1/users', usersRouter);
-app.use('/api/v1/roles', rolesRouter);
-app.use('/roles', rolesRouter);
-app.use('/api/v1/products', productsRouter);
+app.use('/api/v1/users', require('./routes/users'));
+app.use('/api/v1/products', require('./routes/products'));
 app.use('/api/v1/categories', require('./routes/categories'));
-app.use('/products', productsRouter);
+app.use('/api/v1/roles', require('./routes/roles'));
+app.use('/api/v1/auth', require('./routes/auth'));
 
-const dbUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/NNPTUD-C3';
-
-mongoose.connect(dbUri).then(() => {
-  console.log('MongoDB connected:', dbUri);
-}).catch((err) => {
-  console.error('MongoDB connection error:', err.message);
-});
-
-mongoose.connection.on('connected', () => {
-  console.log('MongoDB event: connected');
-});
-
-mongoose.connection.on('disconnected', () => {
-  console.log('MongoDB event: disconnected');
-});
-
-mongoose.connection.on('error', (err) => {
-  console.error('MongoDB event error:', err.message);
-});
+mongoose.connect('mongodb://localhost:27017/NNPTUD-C3');
+mongoose.connection.on('connected',()=>{
+  console.log("connected");
+})
+mongoose.connection.on('disconnected',()=>{
+  console.log("disconnected");
+})
 
 
 // catch 404 and forward to error handler
