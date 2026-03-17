@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 let productModel = require('../schemas/products');//dbContext
+let inventoryModel = require('../schemas/inventory');
 const { default: slugify } = require('slugify');
 
 /* GET users listing. */
@@ -60,8 +61,25 @@ router.post('/', async function (req, res, next) {
     category: req.body.category,
     images: req.body.images
   });
-  await newProduct.save();
-  res.send(newProduct)
+  let savedProduct = await newProduct.save();
+
+  // Create inventory record automatically
+  try {
+    let existed = await inventoryModel.findOne({ product: savedProduct._id });
+    if (!existed) {
+      let item = new inventoryModel({
+        product: savedProduct._id,
+        stock: 0,
+        reserved: 0,
+        soldCount: 0
+      });
+      await item.save();
+    }
+  } catch (e) {
+    console.error('inventory create error', e.message);
+  }
+
+  res.send(savedProduct);
 })
 router.put('/:id', async function (req, res, next) {
   try {
